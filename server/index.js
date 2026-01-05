@@ -3,7 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const words = require('./words');
-const { createRoom, joinRoom, getRoom, removePlayer, startGame, submitSentence, votePlayer, restartGame } = require('./gameStore');
+const { createRoom, joinRoom, getRoom, removePlayer, startGame, submitSentence, votePlayer, restartGame, confirmRole } = require('./gameStore');
 
 const app = express();
 app.use(cors());
@@ -41,6 +41,13 @@ io.on('connection', (socket) => {
 
     socket.on('start_game', ({ code, settings }) => {
         const room = startGame(code, words, settings);
+        if (room) {
+            io.to(code).emit('room_update', room);
+        }
+    });
+
+    socket.on('confirm_role', ({ code }) => {
+        const room = confirmRole(code, socket.id);
         if (room) {
             io.to(code).emit('room_update', room);
         }

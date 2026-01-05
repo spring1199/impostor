@@ -4,6 +4,7 @@ import Lobby from './Lobby';
 import GameInput from './GameInput';
 import Voting from './Voting';
 import Results from './Results';
+import RoleReveal from './RoleReveal';
 
 const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:3000');
 
@@ -44,6 +45,8 @@ const OnlineGame = ({ onBack }) => {
     let content;
     if (!room || room.phase === 'lobby') {
         content = <Lobby socket={socket} room={room} setRoom={setRoom} player={player} setPlayer={setPlayer} />;
+    } else if (room.phase === 'reveal') {
+        content = <RoleReveal socket={socket} room={room} />;
     } else if (room.phase === 'playing') {
         content = <GameInput socket={socket} room={room} player={player} />;
     } else if (room.phase === 'voting') {

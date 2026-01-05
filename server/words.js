@@ -1,33 +1,263 @@
-module.exports = [
-  "Алим", // Apple
-  "Нар", // Sun
-  "Морь", // Horse
-  "Гэр", // Yurt/Home
-  "Тэнгэр", // Sky
-  "Ус", // Water
-  "Гал", // Fire
-  "Ном", // Book
-  "Цэцэг", // Flower
-  "Ширээ", // Table
-  "Сандал", // Chair
-  "Хаалга", // Door
-  "Цонх", // Window
-  "Машин", // Car
-  "Нохой", // Dog
-  "Муур", // Cat
-  "Багш", // Teacher
-  "Оюутан", // Student
-  "Эмч", // Doctor
-  "Цагдаа", // Police
-  "Сургууль", // School
-  "Аав", // Father
-  "Ээж", // Mother
-  "Найз", // Friend
-  "Хайр", // Love
-  "Мөнгө", // Money
-  "Ажил", // Job
-  "Компьютер", // Computer
-  "Утас", // Phone
-  "Цас", // Snow
-  "Бороо", // Rain
-];
+const categoriesData = {
+  "Амьтан": [
+    { word: "Морь", related: "Салхи", hint: "Талын салхи" },
+    { word: "Нохой", related: "Чоно", hint: "Үнэрч" },
+    { word: "Муур", related: "Египет", hint: "Барын зулзага" },
+    { word: "Хонь", related: "Ноос", hint: "Бэлчээр" },
+    { word: "Ямаа", related: "Хадат цохио", hint: "Сахалтай" },
+    { word: "Үхэр", related: "Энэтхэг", hint: "Хүч чадал" },
+    { word: "Тэмээ", related: "Ус", hint: "Урт аялал" },
+    { word: "Арслан", related: "Африк", hint: "Сүрэг" },
+    { word: "Заан", related: "Ой санамж", hint: "Соёо" },
+    { word: "Туулай", related: "Алис", hint: "Хурдан давхидаг" },
+    { word: "Чоно", related: "Тэргэл сар", hint: "Сүргийн манлай" },
+    { word: "Үнэг", related: "Үлгэр", hint: "Зальжин" },
+    { word: "Баавгай", related: "Зөгийн бал", hint: "Өвөл унтдаг" },
+    { word: "Могой", related: "Эм", hint: "Хүйтэн цуст" },
+    { word: "Бүргэд", related: "Хөх тэнгэр", hint: "Анчин" },
+    { word: "Мэлхий", related: "Гүнж", hint: "Баян ходоод" },
+    { word: "Загас", related: "Чимээгүй", hint: "Хайрс" },
+    { word: "Тоть", related: "Далайн дээрэмчин", hint: "Өнгөлөг" },
+    { word: "Тахиа", related: "Сэрүүлэг", hint: "Өглөө" },
+    { word: "Гахай", related: "Мөнгө", hint: "Хамар" }
+  ],
+  "Ахуй": [
+    { word: "Гэр", related: "Дугуй", hint: "Нүүдэлчин" },
+    { word: "Ширээ", related: "Тавцан", hint: "Дөрвөн хөлтэй" },
+    { word: "Сандал", related: "Түшлэг", hint: "Амралт" },
+    { word: "Ор", related: "Зүүд", hint: "3-ны 1" },
+    { word: "Хаалга", related: "Түлхүүр", hint: "Хязгаар" },
+    { word: "Цонх", related: "Нэвт харах", hint: "Гэрэл" },
+    { word: "Компьютер", related: "Код", hint: "Тооцоолох" },
+    { word: "Утас", related: "Холбоо", hint: "Александр Белл" },
+    { word: "Аяга", related: "Эмтэрхий", hint: "Бариултай" },
+    { word: "Хутга", related: "Заазуур", hint: "Ир" },
+    { word: "Халбага", related: "Шөл", hint: "Хэмжих нэгж" },
+    { word: "Зурагт", related: "Мэдээ", hint: "Дөрвөлжин хайрцаг" },
+    { word: "Хөргөгч", related: "Өвөл", hint: "Хадгалах" },
+    { word: "Плитка", related: "Тогоо", hint: "Дулаан" },
+    { word: "Толь", related: "Тусагал", hint: "Үнэн" },
+    { word: "Цаг", related: "Элс", hint: "Зогсдоггүй" },
+    { word: "Дэр", related: "Өд", hint: "Зөөлөн" },
+    { word: "Хөнжил", related: "Хуяг", hint: "Бүтээлэг" },
+    { word: "Шүүгээ", related: "Нууц", hint: "Хайрцаг" },
+    { word: "Ламп", related: "Шинэ санаа", hint: "Эдисон" }
+  ],
+  "Байгаль": [
+    { word: "Нар", related: "Систем", hint: "Од" },
+    { word: "Сар", related: "Татах хүч", hint: "Хиймэл дагуул" },
+    { word: "Тэнгэр", related: "Хязгааргүй", hint: "Агаар мандал" },
+    { word: "Ус", related: "Амьдрал", hint: "H2O" },
+    { word: "Гал", related: "Прометей", hint: "Исэлдэх" },
+    { word: "Уул", related: "Оргил", hint: "Өгсөх" },
+    { word: "Мод", related: "Хүчилтөрөгч", hint: "Үндэс" },
+    { word: "Цэцэг", related: "Бэлэг", hint: "Дэлбээ" },
+    { word: "Цас", related: "Мөс", hint: "Талст" },
+    { word: "Бороо", related: "Үүл", hint: "Дусгануур" },
+    { word: "Үүл", related: "Уур", hint: "Сүүдэр" },
+    { word: "Салхи", related: "Эрчим хүч", hint: "Үл үзэгдэгч" },
+    { word: "Солонго", related: "Гүүр", hint: "Хугарал" },
+    { word: "Од", related: "Орд", hint: "Гялалзах" },
+    { word: "Гол", related: "Ам", hint: "Далай руу" },
+    { word: "Нуур", related: "Толь", hint: "Цэнгэг" },
+    { word: "Элс", related: "Шил", hint: "Цаг" },
+    { word: "Хад", related: "Цуурай", hint: "Бат бөх" },
+    { word: "Зүлэг", related: "Стадион", hint: "Ногоон хивс" },
+    { word: "Аянга", related: "Тор", hint: "Зэус" }
+  ],
+  "Хоол хүнс": [
+    { word: "Алим", related: "Ньютон", hint: "Хориотой жимс" },
+    { word: "Бууз", related: "Уур", hint: "Монгол түргэн хоол" },
+    { word: "Хуушуур", related: "Тос", hint: "Хавтгай" },
+    { word: "Цай", related: "Ёс", hint: "Ургамал" },
+    { word: "Талх", related: "Хөрөнгө", hint: "Өдөр тутмын" },
+    { word: "Сүү", related: "Кальци", hint: "Цагаан идээ" },
+    { word: "Мах", related: "Уураг", hint: "Улаан" },
+    { word: "Өндөг", related: "Уураг", hint: "Хальс" },
+    { word: "Зайрмаг", related: "Ваниль", hint: "Хайлдаг" },
+    { word: "Шоколад", related: "Бельги", hint: "Какао" },
+    { word: "Банш", related: "Хятад", hint: "Чих" },
+    { word: "Цуйван", related: "Хэрчсэн", hint: "Хамгийн түгээмэл" },
+    { word: "Пицца", related: "Гурвалжин", hint: "Бяслаг" },
+    { word: "Бургер", related: "Америк", hint: "Хачиртай" },
+    { word: "Банана", related: "Минион", hint: "Кали" },
+    { word: "Ус", related: "70%", hint: "Тунгалаг" },
+    { word: "Бялуу", related: "Баяр", hint: "Бялуурах" },
+    { word: "Плов", related: "Узбек", hint: "Шар лууван" },
+    { word: "Шарсан төмс", related: "Фри", hint: "Кетчуп" },
+    { word: "Зайдас", related: "Герман", hint: "Бөөрөнхий мах" }
+  ],
+  "Мэргэжил": [
+    { word: "Багш", related: "Шохой", hint: "Ирээдүйг бэлтгэх" },
+    { word: "Эмч", related: "Тангараг", hint: "Цагаан нөмрөг" },
+    { word: "Цагдаа", related: "Дохио", hint: "911" },
+    { word: "Дуучин", related: "Микрофон", hint: "Хоолой" },
+    { word: "Жолооч", related: "Зам", hint: "Хүрд" },
+    { word: "Тогооч", related: "Амтлах", hint: "Холигч" },
+    { word: "Гал сөнөөгч", related: "Баатар", hint: "Улаан машин" },
+    { word: "Барилгачин", related: "Тоосго", hint: "Материал" },
+    { word: "Жүжигчин", related: "Тайз", hint: "Оскар" },
+    { word: "Зураач", related: "Бийр", hint: "Галлерей" },
+    { word: "Тамирчин", related: "Медаль", hint: "Хөлс" },
+    { word: "Сансрын нисгэгч", related: "Таталцлын хүч", hint: "Скафандр" },
+    { word: "Бөх", related: "Зодог шуудаг", hint: "Дэвээ шаваа" },
+    { word: "Малчин", related: "Байгаль", hint: "Нүүдэл" },
+    { word: "Үсчин", related: "Хэв маяг", hint: "Толь" }
+  ],
+  "Спорт": [
+    { word: "Хөл бөмбөг", related: "Дэлхийн аварга", hint: "11 хүн" },
+    { word: "Сагс", related: "NBA", hint: "Улаан шугам" },
+    { word: "Волейбол", related: "Элс", hint: "6 хүн" },
+    { word: "Теннис", related: "Уимблдон", hint: "Шар бөмбөг" },
+    { word: "Бөх", related: "Дэвжээ", hint: "Унавал шороо" },
+    { word: "Сумо", related: "Давс", hint: "Ёкозүна" },
+    { word: "Жүдо", related: "Иппон", hint: "Цагаан өмсгөл" },
+    { word: "Бокс", related: "Ринг", hint: "Нокаут" },
+    { word: "Усанд сэлэлт", related: "Амьсгал", hint: "Баттерфляй" },
+    { word: "Шатар", related: "Мад", hint: "Стратеги" },
+    { word: "Даам", related: "Шоо", hint: "Дайрах" },
+    { word: "Гүйлт", related: "Марафон", hint: "Амьсгаа" },
+    { word: "Дугуй", related: "Тур де Франц", hint: "Гинж" },
+    { word: "Цана", related: "Альпи", hint: "Таяг" },
+    { word: "Сур харваа", related: "Бай", hint: "Мэргэн" }
+  ],
+  "Технологи": [
+    { word: "Гар утас", related: "Сим", hint: "Мэдрэгчтэй" },
+    { word: "Зөөврийн компьютер", related: "Оффис", hint: "Эвхэгддэг" },
+    { word: "Чихэвч", related: "Тусгаарлах", hint: "Стерео" },
+    { word: "Мауз", related: "Заагч", hint: "Баруун зүүн" },
+    { word: "Гар (Keyboard)", related: "QWERTY", hint: "10 хуруу" },
+    { word: "Камер", related: "Линз", hint: "Санах ой" },
+    { word: "Интернет", related: "Сүлжээ", hint: "Дэлхий нийт" },
+    { word: "Фэйсбүүк", related: "Цукерберг", hint: "Нийгэм" },
+    { word: "Инстаграм", related: "Хэштего", hint: "Фолловер" },
+    { word: "ТикТок", related: "Тренд", hint: "Хятад апп" },
+    { word: "Робот", related: "Ирээдүй", hint: "Автомат" },
+    { word: "Дрон", related: "Сэнс", hint: "Алсын удирдлага" },
+    { word: "Машин", related: "Хөдөлгүүр", hint: "Тээвэр" },
+    { word: "Пуужин", related: "Наса", hint: "Түлш" },
+    { word: "Цаг", related: "Зүрхний цохилт", hint: "Ухаалаг" }
+  ],
+  "Хувцас": [
+    { word: "Өмд", related: "Тэлээ", hint: "Шуумаг" },
+    { word: "Цамц", related: "Товч", hint: "Захтай" },
+    { word: "Гутал", related: "Үдээс", hint: "Алхаа" },
+    { word: "Малгай", related: "Нар", hint: "Оройтой" },
+    { word: "Бээлий", related: "Хуруу", hint: "Арьс" },
+    { word: "Оймс", related: "Хос", hint: "Урагддаг" },
+    { word: "Дээл", related: "Хээ", hint: "Үндэсний" },
+    { word: "Бүс", related: "Жинс", hint: "Бэхлэх" },
+    { word: "Пальто", related: "Ноос", hint: "Загварлаг" },
+    { word: "Куртка", related: "Өд", hint: "Цахилгаан" },
+    { word: "Шалбар", related: "Материал", hint: "Нимгэн" },
+    { word: "Юбка", related: "Хөл", hint: "Богино" },
+    { word: "Даашинз", related: "Хурим", hint: "Урт" },
+    { word: "Шил", related: "Нүүр", hint: "Хүрээ" },
+    { word: "Цүнх", related: "Ачаа", hint: "Савхи" }
+  ],
+  "Улс орон": [
+    { word: "Монгол", related: "Тал", hint: "Хөх толбо" },
+    { word: "Хятад", related: "Хэрэм", hint: "Хүн ам" },
+    { word: "Орос", related: "Баавгай", hint: "Газар нутаг" },
+    { word: "Америк", related: "Эрх чөлөө", hint: "50 од" },
+    { word: "Япон", related: "Арал", hint: "Наран ургах" },
+    { word: "Солонгос", related: "Хуваагдмал", hint: "Хойг" },
+    { word: "Англи", related: "Цай", hint: "Хатан хаан" },
+    { word: "Франц", related: "Хайр", hint: "Загвар" },
+    { word: "Герман", related: "Чанар", hint: "Пиво" },
+    { word: "Итали", related: "Колизей", hint: "Гутлын хэлбэртэй" },
+    { word: "Энэтхэг", related: "Халуун ногоо", hint: "Таж махал" },
+    { word: "Бразил", related: "Карнавал", hint: "Кофе" },
+    { word: "Австрали", related: "Уутат", hint: "Өмнөд тив" },
+    { word: "Египет", related: "Нил мөрөн", hint: "Фараон" },
+    { word: "Канад", related: "Агч мод", hint: "Хойд хэсэг" }
+  ],
+  "Алдартнууд": [
+    { word: "Чингис хаан", related: "Тэмүжин", hint: "1206" },
+    { word: "Болд", related: "R&B", hint: "Монгол поп" },
+    { word: "Ука", related: "Маргаашийн нар", hint: "Шүүгч" },
+    { word: "Жавхлан", related: "Малчин", hint: "УИХ" },
+    { word: "Роналдо", related: "Португал", hint: "5 бөмбөг" },
+    { word: "Илон Маск", related: "X", hint: "Баян" },
+    { word: "Майкл Жексон", related: "Бүжиг", hint: "Хар цагаан" },
+    { word: "Баттулга", related: "Жүдо", hint: "Мянганы зам" },
+    { word: "Оюун-Эрдэнэ", related: "Алсын хараа", hint: "2050" },
+    { word: "Лхагвасүрэн", related: "Бүүвэй", hint: "Ардын жүжигчин" },
+    { word: "Сүхбаатар", related: "Хувьсгал", hint: "Морьтой хөшөө" },
+    { word: "Трамп", related: "Цамхаг", hint: "Бизнесмэн" },
+    { word: "Путин", related: "Кремль", hint: "Тагнуулч" },
+    { word: "Ганнам Стайл", related: "Youtube", hint: "Морин бүжиг" },
+    { word: "Наруто", related: "Сасүкэ", hint: "Хокагэ" },
+    { word: "Месси", related: "Барселона", hint: "Ямаа (GOAT)" },
+    { word: "Жокер", related: "Карт", hint: "Инээд" },
+    { word: "Спайдермэн", related: "Хаздаг", hint: "Питер Паркер" },
+    { word: "Харри Поттер", related: "Шүүр", hint: "Хогвартс" },
+    { word: "Рокит Бэй", related: "Пуужин", hint: "Нэг өдөр" },
+    { word: "Вандэбо", related: "Тор", hint: "Харж байна уу" },
+    { word: "Гинжин", related: "Машин", hint: "Онц" },
+    { word: "Одончимэг", related: "Алаг нүдэн", hint: "Найруулагч" },
+    { word: "Барби", related: "Ягаан", hint: "Хуванцар" },
+    { word: "Гокү", related: "Вежета", hint: "Үсээ босгодог" }
+  ],
+  "Орчин үе": [
+    { word: "Подкаст", related: "Микрофон", hint: "Аудио контент" },
+    { word: "Влог", related: "Youtube", hint: "Өдөр тутмын амьдрал" },
+    { word: "Биткойн", related: "Блокчэйн", hint: "Сатоши" },
+    { word: "Хиймэл оюун", related: "Ирээдүй", hint: "Ухаантай програм" },
+    { word: "Мийм", related: "Инээд", hint: "Вирал зураг" },
+    { word: "Рилс", related: "Гүйлгэх", hint: "Босоо бичлэг" },
+    { word: "Инфлүүнсэр", related: "Маркетинг", hint: "Нөлөөлөгч" },
+    { word: "Стартап", related: "Силикон", hint: "Гарааны бизнес" },
+    { word: "Скүүтэр", related: "Түрээс", hint: "Хоёр дугуй" },
+    { word: "Нетфликс", related: "Стрийминг", hint: "Улаан N" },
+    { word: "Айфон", related: "Жобс", hint: "Хазсан алим" },
+    { word: "Тесла", related: "Батерей", hint: "Автомат жолоодлого" },
+    { word: "Фильтр", related: "Инстаграм", hint: "Өнгө шүүгч" },
+    { word: "Стори", related: "24 цаг", hint: "Түр зуурын" },
+    { word: "Краш", related: "Нууц", hint: "Таалагддаг хүн" },
+    { word: "Пранк", related: "Нууц камер", hint: "Дөнгөх" },
+    { word: "Эможи", related: "Дүрс", hint: "Смайл" },
+    { word: "Стикер", related: "Наалт", hint: "Чатны зураг" },
+    { word: "Red Flag", related: "Анхааруулга", hint: "Улаан туг" },
+    { word: "Green Flag", related: "Зөвшөөрөл", hint: "Ногоон гэрэл" },
+    { word: "Гостинг", related: "Алга болох", hint: "Сүнс шиг" },
+    { word: "Токсик", related: "Хортой", hint: "Хэцүү харилцаа" },
+    { word: "Аниме", related: "Япон", hint: "Манга" }
+  ],
+  "Эд зүйлс": [
+    { word: "Түлхүүр", related: "Хаалга", hint: "Жижиг төмөр" },
+    { word: "Түрийвч", related: "Арьс", hint: "Хадгаламж" },
+    { word: "Нүдний шил", related: "Линз", hint: "Хараа муутай" },
+    { word: "Маск", related: "Хамгаалалт", hint: "Ам хамар" },
+    { word: "Цэнэглэгч", related: "Тог", hint: "Кабель" },
+    { word: "Шүхэр", related: "Ус", hint: "Мэри Поппинс" },
+    { word: "Бөгж", related: "Хурим", hint: "Дугуй металл" },
+    { word: "Саван", related: "Хөөс", hint: "Угаалга" },
+    { word: "Оо", related: "Цагаан", hint: "Талст" },
+    { word: "Шүдэнз", related: "Мод", hint: "Зурдаг" },
+    { word: "Лаа", related: "Лавай", hint: "Гэрэл гаргагч" },
+    { word: "Толь", related: "Шил", hint: "Яг өөрийгөө" },
+    { word: "Сам", related: "Шүд", hint: "Арсгар" },
+    { word: "Асаагуур", related: "Хий", hint: "Жижиг гал" },
+    { word: "Флаш", related: "USB", hint: "Зөөврийн" },
+    { word: "Повер банк", related: "Тог", hint: "Зөөврийн того" },
+    { word: "Чихэвч", related: "Блютүүт", hint: "Баруун зүүн" },
+    { word: "Хүүди", related: "Малгай", hint: "Чөлөөт хувцас" },
+    { word: "Аяга таваг угаагч", related: "Машин", hint: "Савантай" },
+    { word: "Индүү", related: "Халуун", hint: "Тэгшлэгч" },
+    { word: "Сэнс", related: "Агаар", hint: "Эргэдэг" },
+    { word: "Селфи гар", related: "Урт", hint: "Ганцаараа зураг авах" },
+    { word: "Соруул", related: "Хуванцар", hint: "Агаар сорох" },
+    { word: "Ус буцалгагч", related: "220в", hint: "Кетл" }
+  ]
+};
+
+const getAllWords = () => {
+  let all = [];
+  Object.values(categoriesData).forEach(arr => {
+    all = [...all, ...arr];
+  });
+  return all;
+};
+
+module.exports = { categoriesData, getAllWords };

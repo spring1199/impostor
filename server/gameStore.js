@@ -83,43 +83,114 @@ const removePlayer = (socketId) => {
     return null;
 };
 
-const startGame = (code, wordsList, settings = {}) => {
+const startGame = (code, wordsModule, settings = {}) => {
     const room = rooms[code];
     if (!room) return null;
 
-    // Reset state
-    room.phase = 'playing';
-    room.winner = null;
+    // Default Settings
     room.settings = {
-        totalRounds: settings.rounds || 2, // Default 2 rounds
-        ...settings
+        totalRounds: settings.rounds || 2,
+        category: settings.category || "All",
+        impostorCount: settings.impostorCount || 1,
+        hints: settings.hints || { enabled: false, type: "Related Word" },
+        customWord: settings.customWord || ""
     };
+
+    // Reset state
+    room.phase = 'reveal'; // NEW: Start with Reveal phase
+    room.winner = null;
+
     room.state = {
         currentRound: 1,
         turnIndex: 0,
-        turnOrder: [], // Will store player IDs
+        turnOrder: [],
+        playersConfirmed: 0 // Track who viewed role
     };
 
-    // Shuffle players for turn order
+    // Shuffle players for turn order later
     room.state.turnOrder = room.players.map(p => p.id).sort(() => Math.random() - 0.5);
 
     room.players.forEach(p => {
-        p.sentence = ""; // Keep for legacy/compatibility or current input
-        p.words = []; // Store history of words
+        p.sentence = "";
+        p.words = [];
         p.votesReceived = 0;
         p.hasVoted = false;
+        p.confirmedRole = false; // Reset confirmation
         p.role = "crew";
+        p.word = null; // Clear old word
+        p.hint = null; // Clear old hint
     });
 
-    // Assign roles
-    const impostorIndex = Math.floor(Math.random() * room.players.length);
-    room.impostorId = room.players[impostorIndex].id;
-    room.impostorName = room.players[impostorIndex].name;
-    room.players[impostorIndex].role = "impostor";
+    // 1. Pick Word
+    let selectedWordObj = null;
+    let pool = [];
 
-    // Pick word
-    const wordIndex = Math.floor(Math.random() * wordsList.length);
-    room.word = wordsList[wordIndex];
+    if (room.settings.customWord) {
+        selectedWordObj = { word: room.settings.customWord, related: "???", hint: "Custom Word" };
+    } else {
+        const { categoriesData, getAllWords } = wordsModule;
+        if (room.settings.category === "All") {
+            pool = getAllWords();
+        } else {
+            pool = categoriesData[room.settings.category] || getAllWords();
+        }
+        selectedWordObj = pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    room.word = selectedWordObj.word;
+    room.categoryName = room.settings.customWord ? "Custom" : room.settings.category;
+
+    // 2. Assign Word to Crew
+    room.players.forEach(p => {
+        p.word = selectedWordObj.word;
+    });
+
+    // 3. Assign Impostor(s)
+    let count = 0;
+    const usedIndices = new Set();
+    // Validate impostor count (max half players)
+    const maxImpostors = Math.floor(room.players.length / 2);
+    const targetImpostors = Math.min(room.settings.impostorCount, maxImpostors) || 1;
+
+    while (count < targetImpostors) {
+        const idx = Math.floor(Math.random() * room.players.length);
+        if (!usedIndices.has(idx)) {
+            usedIndices.add(idx);
+            const p = room.players[idx];
+            p.role = 'impostor';
+            p.word = null; // Impostor doesn't know word
+
+            // Hint Logic
+            if (room.settings.hints.enabled) {
+                if (room.settings.hints.type === "Related Word") {
+                    p.hint = selectedWordObj.related;
+                } else if (room.settings.hints.type === "Category Name") {
+                    p.hint = room.categoryName;
+                } else if (room.settings.hints.type === "Short Clue") {
+                    p.hint = selectedWordObj.hint;
+                }
+            }
+            count++;
+        }
+    }
+
+    return room;
+};
+
+const confirmRole = (code, playerId) => {
+    const room = rooms[code];
+    if (!room) return null;
+
+    const player = room.players.find(p => p.id === playerId);
+    if (player && !player.confirmedRole) {
+        player.confirmedRole = true;
+        room.state.playersConfirmed++;
+    }
+
+    // Check if all confirmed
+    if (room.state.playersConfirmed >= room.players.length) {
+        room.phase = 'playing'; // Start actual gameplay
+    }
 
     return room;
 };
@@ -221,6 +292,9 @@ const restartGame = (code) => {
         p.votesReceived = 0;
         p.hasVoted = false;
         p.role = "crew";
+        p.confirmedRole = false;
+        p.word = null;
+        p.hint = null;
     });
     return room;
 };
@@ -234,5 +308,6 @@ module.exports = {
     startGame,
     submitSentence,
     votePlayer,
-    restartGame
+    restartGame,
+    confirmRole
 };
