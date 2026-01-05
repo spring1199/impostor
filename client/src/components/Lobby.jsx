@@ -50,7 +50,7 @@ const Lobby = ({ socket, room, setRoom, player, setPlayer }) => {
                             </select>
                         </label>
                         <button onClick={startGame} disabled={room.players.length < 3}>
-                            Start Game {room.players.length < 3 && "(Need 4+)"}
+                            Start Game {room.players.length < 3 && "(Need 3+)"}
                         </button>
                     </div>
                 ) : (
