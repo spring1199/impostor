@@ -39,8 +39,8 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('start_game', ({ code }) => {
-        const room = startGame(code, words);
+    socket.on('start_game', ({ code, settings }) => {
+        const room = startGame(code, words, settings);
         if (room) {
             io.to(code).emit('room_update', room);
         }

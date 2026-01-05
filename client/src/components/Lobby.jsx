@@ -4,6 +4,7 @@ const Lobby = ({ socket, room, setRoom, player, setPlayer }) => {
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
     const [error, setError] = useState('');
+    const [rounds, setRounds] = useState(2); // Default 2 rounds
 
     const createRoom = () => {
         if (!name) return setError("Enter your name!");
@@ -18,7 +19,7 @@ const Lobby = ({ socket, room, setRoom, player, setPlayer }) => {
     };
 
     const startGame = () => {
-        socket.emit('start_game', { code: room.code });
+        socket.emit('start_game', { code: room.code, settings: { rounds: parseInt(rounds) } });
     };
 
     if (room) {
@@ -35,9 +36,23 @@ const Lobby = ({ socket, room, setRoom, player, setPlayer }) => {
                 </ul>
 
                 {player.isHost || (room.players.find(p => p.id === socket.id)?.isHost) ? (
-                    <button onClick={startGame} disabled={room.players.length < 3}>
-                        Start Game {room.players.length < 3 && "(Need 4+)"}
-                    </button>
+                    <div style={{ marginTop: '20px' }}>
+                        <label style={{ display: 'block', marginBottom: '10px' }}>
+                            Rounds:
+                            <select
+                                value={rounds}
+                                onChange={(e) => setRounds(e.target.value)}
+                                style={{ marginLeft: '10px', padding: '5px' }}
+                            >
+                                {[1, 2, 3, 4, 5].map(num => (
+                                    <option key={num} value={num}>{num}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <button onClick={startGame} disabled={room.players.length < 3}>
+                            Start Game {room.players.length < 3 && "(Need 4+)"}
+                        </button>
+                    </div>
                 ) : (
                     <p>Waiting for host...</p>
                 )}

@@ -83,15 +83,29 @@ const removePlayer = (socketId) => {
     return null;
 };
 
-const startGame = (code, wordsList) => {
+const startGame = (code, wordsList, settings = {}) => {
     const room = rooms[code];
     if (!room) return null;
 
     // Reset state
     room.phase = 'playing';
     room.winner = null;
+    room.settings = {
+        totalRounds: settings.rounds || 2, // Default 2 rounds
+        ...settings
+    };
+    room.state = {
+        currentRound: 1,
+        turnIndex: 0,
+        turnOrder: [], // Will store player IDs
+    };
+
+    // Shuffle players for turn order
+    room.state.turnOrder = room.players.map(p => p.id).sort(() => Math.random() - 0.5);
+
     room.players.forEach(p => {
-        p.sentence = "";
+        p.sentence = ""; // Keep for legacy/compatibility or current input
+        p.words = []; // Store history of words
         p.votesReceived = 0;
         p.hasVoted = false;
         p.role = "crew";
@@ -114,17 +128,34 @@ const submitSentence = (code, playerId, sentence) => {
     const room = rooms[code];
     if (!room) return null;
 
-    const player = room.players.find(p => p.id === playerId);
-    if (player) {
-        player.sentence = sentence;
+    // Validate turn
+    const currentPlayerId = room.state.turnOrder[room.state.turnIndex];
+    if (playerId !== currentPlayerId) {
+        return room; // Not their turn
     }
 
-    // Check if all submitted
-    const allSubmitted = room.players.every(p => p.sentence.length > 0);
-    if (allSubmitted) {
-        room.phase = 'voting';
-        // Shuffle players for display? Frontend does this maybe?
-        // Or store sentences separately? For MVP store on players.
+    const player = room.players.find(p => p.id === playerId);
+    if (player) {
+        player.sentence = sentence; // Current word
+        player.words.push(sentence); // Add to history
+    }
+
+    // Move turn
+    room.state.turnIndex++;
+
+    // Check if round is complete
+    if (room.state.turnIndex >= room.state.turnOrder.length) {
+        // End of round
+        if (room.state.currentRound < room.settings.totalRounds) {
+            // Next round
+            room.state.currentRound++;
+            room.state.turnIndex = 0;
+            // Clear current 'sentence' field for UI reset if needed, but history is in 'words'
+            room.players.forEach(p => p.sentence = "");
+        } else {
+            // Game Over -> Voting
+            room.phase = 'voting';
+        }
     }
     return room;
 };
@@ -182,8 +213,11 @@ const restartGame = (code) => {
     room.impostorId = null;
     room.impostorName = null;
     room.winner = null;
+    room.state = null; // Clear game state
+    room.settings = null;
     room.players.forEach(p => {
         p.sentence = "";
+        p.words = [];
         p.votesReceived = 0;
         p.hasVoted = false;
         p.role = "crew";
